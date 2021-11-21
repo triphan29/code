@@ -1,0 +1,99 @@
+#!/usr/bin/python3
+import pygame
+from datetime import datetime, timedelta, time
+#import time
+
+
+WHITE = (255,255,255)
+BLUE = (0,0,255)
+GREEN = (0,128,0)
+RED = (255,0,0)
+BLACK = (0,0,0)
+FUCHSIA = (255, 0, 128)
+running = True
+
+now = datetime.now().time()
+currentTime = now.strftime("%H:%M:%S")
+
+pre_workTime = timedelta()
+pre_breakTime = timedelta()
+workTime = timedelta()
+breakTime = timedelta()
+startWork = datetime.now()
+startBreak = datetime.now()
+
+buttonStr = "Start Work"
+buttonCol = GREEN
+working = 0
+
+
+pygame.init()
+
+#Setup drawing window
+screen = pygame.display.set_mode([500, 250])
+
+
+def display_text(str, size, col):
+    font = pygame.font.SysFont('sans', size)
+    text = font.render(str, True, col)
+    return text
+
+
+while running:
+    screen.fill(BLACK)
+    #Get mouse position
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    #Draw
+    text = "Time  Consumption"
+    screen.blit(display_text(text, 40, WHITE), (50, 10))
+    #Draw start time
+    text = "Start Time: " + currentTime
+    screen.blit(display_text(text, 25, WHITE), (10, 60))
+    #Draw break and work
+    text = "WORK"
+    screen.blit(display_text(text, 25, GREEN), (100, 100))
+    text = "BREAK"
+    screen.blit(display_text(text, 25, RED), (300, 100))
+    #Draw work time
+    if working == 1:
+        delta = datetime.now() - startWork
+        #Count from the previous time
+        workTime = pre_workTime + delta
+        #Remove micro second value
+        workTime = workTime - timedelta(microseconds=workTime.microseconds)
+    else:
+        delta = datetime.now() - startBreak
+        #Count from the previous time
+        breakTime = pre_breakTime + delta
+        #Remove micro second value
+        breakTime = breakTime - timedelta(microseconds=breakTime.microseconds)
+    screen.blit(display_text(str(workTime), 25, GREEN), (100, 150))
+    #Draw break time
+    screen.blit(display_text(str(breakTime), 25, RED), (300, 150))
+    #Draw button
+    pygame.draw.rect(screen, buttonCol, (180, 190, 140, 50))
+    text = buttonStr
+    screen.blit(display_text(text, 25, BLACK), (190, 200))
+    #Handle click event
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.MOUSEBUTTONUP:
+            if 180 < mouse_x < 320 and 190 < mouse_y < 240:
+                if working == 0:
+                    #Change to work mode
+                    buttonStr = "Stop Work"
+                    buttonCol = RED
+                    startWork = datetime.now()
+                    pre_breakTime = breakTime
+                    working = 1
+                else:
+                    #Change to break mode
+                    buttonStr = "Start Work"
+                    buttonCol = GREEN
+                    startBreak = datetime.now()
+                    pre_workTime = workTime
+                    working = 0
+    #Display
+    pygame.display.flip()
+pygame.quit()
