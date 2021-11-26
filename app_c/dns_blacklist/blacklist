@@ -1,0 +1,9 @@
+{
+    "list": [
+        {"domain": "tiktok.com"},
+        {"domain": "facebook.com"},
+        {"domain": "genk.vn", "start": "13", "end":"15"},
+        {"domain": "deecev.vn"},
+        {"domain": "tuoitre.vn", "start": "22:25", "end":"22:26"}
+    ]
+}
